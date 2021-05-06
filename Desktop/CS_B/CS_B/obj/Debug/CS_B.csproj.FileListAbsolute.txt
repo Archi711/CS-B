@@ -9,3 +9,14 @@ D:\projekty\PABD\CS_B\CS_B\CS_B\obj\Debug\CS_B.exe
 D:\projekty\PABD\CS_B\CS_B\CS_B\obj\Debug\CS_B.pdb
 D:\projekty\PABD\CS_B\CS_B\CS_B\obj\Debug\CS_B.Form1.resources
 D:\projekty\PABD\CS_B\CS_B\CS_B\obj\Debug\CS_B.Entry_p.resources
+D:\projekty\PABD\CSB_REPO\Desktop\CS_B\CS_B\bin\Debug\CS_B.exe.config
+D:\projekty\PABD\CSB_REPO\Desktop\CS_B\CS_B\bin\Debug\CS_B.exe
+D:\projekty\PABD\CSB_REPO\Desktop\CS_B\CS_B\bin\Debug\CS_B.pdb
+D:\projekty\PABD\CSB_REPO\Desktop\CS_B\CS_B\obj\Debug\CS_B.csprojAssemblyReference.cache
+D:\projekty\PABD\CSB_REPO\Desktop\CS_B\CS_B\obj\Debug\CS_B.Entry_p.resources
+D:\projekty\PABD\CSB_REPO\Desktop\CS_B\CS_B\obj\Debug\CS_B.Form1.resources
+D:\projekty\PABD\CSB_REPO\Desktop\CS_B\CS_B\obj\Debug\CS_B.Properties.Resources.resources
+D:\projekty\PABD\CSB_REPO\Desktop\CS_B\CS_B\obj\Debug\CS_B.csproj.GenerateResource.cache
+D:\projekty\PABD\CSB_REPO\Desktop\CS_B\CS_B\obj\Debug\CS_B.csproj.CoreCompileInputs.cache
+D:\projekty\PABD\CSB_REPO\Desktop\CS_B\CS_B\obj\Debug\CS_B.exe
+D:\projekty\PABD\CSB_REPO\Desktop\CS_B\CS_B\obj\Debug\CS_B.pdb
