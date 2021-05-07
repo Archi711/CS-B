@@ -6,12 +6,15 @@ import dotenv from 'dotenv'
 dotenv.config()
 
 import pool from './api/db'
-//import routes from './routes'
+import routes from './routes'
 
 const app = express()
 app.use(cors())
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
+routes.forEach(route => {
+  app.use(route)
+});
 
 
 pool.connect().then(() => {
