@@ -1,1 +1,4 @@
 # all ignored files from every part of project
+/backend/node_modules
+/frontend/node_modules
+*.env
