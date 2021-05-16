@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import {
   Grid,
   FormControl,
@@ -7,39 +7,44 @@ import {
   Input,
   Button,
   VStack,
+  useDisclosure,
+  Spinner,
 } from '@chakra-ui/react'
-import axios from 'axios'
-import { useHistory } from 'react-router'
 import { useSetRecoilState } from 'recoil'
 
 import { userState } from '../recoil/atoms'
 import { tokenSessionState } from '../recoil/selectors'
+import useFetch from '../hooks/useFetch'
+import ModalPopup from '../common/ModalPopup'
 
 export default function Login(props) {
+  const { isOpen, onOpen, onClose } = useDisclosure()
   const setUser = useSetRecoilState(userState)
   const setTokens = useSetRecoilState(tokenSessionState)
-  const history = useHistory()
+  const { status, data, error, setBody } = useFetch(`/login`, 'post', false)
 
-  const handleSubmit = async e => {
+  useEffect(() => {
+    if (data) {
+      console.log(data)
+      setUser(data.user)
+      setTokens({
+        accessToken: data.accessToken,
+        refreshToken: data.refreshToken
+      })
+    }
+  }, [data, setUser, setTokens])
+
+  useEffect(() => {
+    if (error && status === 'error') onOpen()
+  }, [error, status, onOpen])
+
+  const handleSubmit = e => {
     e.preventDefault()
     const authData = {
       login: e.target[0].value,
       password: e.target[1].value
     }
-
-    try {
-      const resp = await axios.post(`http://${process.env.REACT_APP_API_ADDRESS}/login`, authData)
-      setUser(resp.data.user)
-      setTokens({
-        accessToken: resp.data.accessToken,
-        refreshToken: resp.data.refreshToken
-      })
-      history.push('/')
-    }
-    catch (ex) {
-      alert(ex)
-    }
-
+    setBody(authData)
   }
   return (
     <Grid
@@ -59,10 +64,20 @@ export default function Login(props) {
             <FormHelperText>Twoje hasło</FormHelperText>
           </FormControl>
           <FormControl >
-            <Button type='submit' variant='outline' colorScheme='orange' p={3} isFullWidth>Zaloguj</Button>
+            <Button type='submit' variant='outline' colorScheme='orange' p={3} isFullWidth>{
+              status === 'loading' ? <Spinner /> : 'Zaloguj'
+            }</Button>
           </FormControl>
         </form>
       </VStack>
+      <ModalPopup
+        variant='error'
+        isOpen={isOpen}
+        onClose={onClose}
+        title='Wystąpił błąd!'
+        message={error}
+      />
     </Grid>
+
   )
 }

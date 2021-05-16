@@ -1,32 +1,35 @@
-import { Button, Flex } from '@chakra-ui/react'
-import axios from 'axios';
+import { Button, Flex, useToast } from '@chakra-ui/react'
 import React from 'react'
-import { Redirect } from 'react-router-dom';
 import { useRecoilState } from 'recoil';
 import { ColorModeSwitcher } from '../ColorModeSwitcher';
 import { debounce } from 'lodash'
 
 import { userState } from '../recoil/atoms';
 import { tokenSessionState } from '../recoil/selectors'
+import useFetch from '../hooks/useFetch';
 
 export default function Header(props) {
+  const toast = useToast()
   const [user, setUser] = useRecoilState(userState)
   const [tokens, setTokens] = useRecoilState(tokenSessionState)
-  let refreshToken = null
-  if (tokens) refreshToken = tokens.refreshToken
+  const { setBody } = useFetch('/logout', 'post')
+
   const handleLogout = (byUser) => e => {
-    if (user && refreshToken) axios.post(`http://${process.env.REACT_APP_API_ADDRESS}/logout`, { token: refreshToken })
-      .then(v => {
-        setUser(null)
-        if (byUser) setTokens({ accessToken: "", refreshToken: "" })
-      })
-      .catch(e => alert(`błąd wylogowania ${e}`))
+    if (user && tokens.refreshToken) setBody({ token: tokens.refreshToken })
+    if (byUser) setTokens({ accessToken: "", refreshToken: "" })
+    setUser(null)
+    toast({
+      description: "Pomyślnie wylogowano",
+      status: "success",
+      duration: 3000,
+      isClosable: true
+    })
+
   }
   window.addEventListener('beforeunload', debounce(handleLogout(false), 500))
   return (
     <Flex flexDir='row-reverse' alignItems='center'>
       <ColorModeSwitcher />
-      <Redirect to='/'></Redirect>
       {props.children}
       {user !== null ?
         <Button onClick={handleLogout(true)}>Wyloguj się</Button> :

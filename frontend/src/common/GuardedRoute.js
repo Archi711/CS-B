@@ -1,29 +1,45 @@
-import axios from 'axios'
 import React, { useEffect } from 'react'
 import { Route } from 'react-router-dom'
 import { useRecoilValue, useRecoilState } from 'recoil'
 import { userState } from '../recoil/atoms'
 import { tokenSessionState } from '../recoil/selectors'
+import useFetch from '../hooks/useFetch'
+import ModalPopup from './ModalPopup'
+import { useDisclosure } from '@chakra-ui/hooks'
+import { Center } from '@chakra-ui/react'
+import { Spinner } from '@chakra-ui/spinner'
 
 export default function GuardedRoute({ Component, ComponentElse, ...rest }) {
+  const { isOpen, onOpen, onClose } = useDisclosure()
   const tokens = useRecoilValue(tokenSessionState)
   const [user, setUser] = useRecoilState(userState)
-  console.log("guarding:", user, tokens)
+  const { status, data, error, setBody } = useFetch(`/relogin`, 'post', false)
+
   useEffect(() => {
-    const getUser = async () => {
-      try {
-        const response = await axios.post(`http://${process.env.REACT_APP_API_ADDRESS}/relogin`, { token: tokens.accessToken })
-        setUser(response.data)
-      }
-      catch (e) {
-        console.log("error reloggin user", e)
-      }
-    }
+    setUser(data)
+  }, [data, setUser])
+
+  useEffect(() => {
     if (tokens?.accessToken && !user) {
-      getUser()
+      setBody({ token: tokens.accessToken })
     }
+  }, [user, setUser, tokens, setBody])
 
-  }, [user, setUser, tokens])
+  useEffect(() => {
+    console.log(error, status)
+    if (error && status === 'error') onOpen()
+  }, [error, status, onOpen])
 
-  return <Route {...rest} render={props => user !== null ? <Component /> : <ComponentElse />} />
+  return status === 'loading' ? <Center width='full' height='lg'><Spinner size='xl' /></Center>
+    :
+    <>
+      <Route {...rest} render={props => user !== null ? <Component /> : <ComponentElse />} />
+      <ModalPopup
+        isOpen={isOpen}
+        onClose={onClose}
+        title='Wystąpił błąd'
+        variant='error'
+        message={error}
+      />
+    </>
 }
