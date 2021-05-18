@@ -1,0 +1,31 @@
+Create VIEW ReadingList_VW
+
+AS SELECT
+DeliveryPointID  AS ID,
+FirstName,
+LastName,
+StreetName,
+BuildingNumber,
+FlatNumber,
+PhoneNumber,
+HotUsage,
+ColdUsage,
+ReadDate
+
+FROM
+DeliveryPoints a,
+DeliveryPointsAddresses b,
+Clients c,
+ClientsDeliveryPoints d,
+MeterReads e
+
+WHERE
+a.IDAddress = b.AddressID
+AND c.ClientID = d.IDClient
+AND a.DeliveryPointID = d.IDDeliveryPoint
+AND e.MeterReadID =  a.DeliveryPointID
+AND datepart(mm,e.ReadDate) =month(getdate())   
+AND datepart(yyyy,e.ReadDate) =year(getdate()) 
+
+
+ORDER BY (CASE WHEN e.ColdUsage IS NULL THEN 0 ELSE 1 END), e.ColdUsage DESC
