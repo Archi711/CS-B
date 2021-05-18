@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8"?><Database Name="CS-B" Class="DataClasses1DataContext" xmlns="http://schemas.microsoft.com/linqtosql/dbml/2007">
+  <Connection Mode="AppSettings" ConnectionString="Data Source=DESKTOP-CNP1N0H\SQLEXPRESS;Initial Catalog=CS-B;Integrated Security=True" SettingsObjectName="CSB.Properties.Settings" SettingsPropertyName="CS_BConnectionString" Provider="System.Data.SqlClient" />
+  <Table Name="dbo.ReadingList_VW" Member="ReadingList_VW">
+    <Type Name="ReadingList_VW">
+      <Column Name="ID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="FirstName" Type="System.String" DbType="Char(16) NOT NULL" CanBeNull="false" />
+      <Column Name="LastName" Type="System.String" DbType="Char(16) NOT NULL" CanBeNull="false" />
+      <Column Name="StreetName" Type="System.String" DbType="Char(32) NOT NULL" CanBeNull="false" />
+      <Column Name="BuildingNumber" Type="System.Int16" DbType="SmallInt NOT NULL" CanBeNull="false" />
+      <Column Name="FlatNumber" Type="System.Int16" DbType="SmallInt" CanBeNull="true" />
+      <Column Name="PhoneNumber" Type="System.String" DbType="Char(9) NOT NULL" CanBeNull="false" />
+      <Column Name="HotUsage" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="ColdUsage" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="ReadDate" Type="System.DateTime" DbType="Date" CanBeNull="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.MeterReads" Member="MeterReads">
+    <Type Name="MeterReads">
+      <Column Name="MeterReadID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="HotUsage" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="ColdUsage" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="ReadDate" Type="System.DateTime" DbType="Date" CanBeNull="true" />
+      <Column Name="IDDeliveryPoint" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+    </Type>
+  </Table>
+</Database>
