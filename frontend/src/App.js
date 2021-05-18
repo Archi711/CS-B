@@ -6,9 +6,11 @@ import {
   theme,
 } from '@chakra-ui/react';
 import { RecoilRoot } from 'recoil';
-import { BrowserRouter as Router, Switch, Route } from 'react-router-dom'
-import Login from './pages/Login';
+import { BrowserRouter as Router, Switch } from 'react-router-dom'
 import Header from './components/Header'
+import Dashboard from './pages/Dashboard';
+import GuardedRoute from './common/GuardedRoute';
+import Login from './pages/Login';
 
 function App() {
   return (
@@ -16,10 +18,10 @@ function App() {
       <RecoilRoot>
         <Box>
           <Grid minH="100vh" p={3} templateRows='1fr 11fr'>
-            <Header></Header>
             <Router>
+              <Header></Header>
               <Switch>
-                <Route path='/login' render={Login}></Route>
+                <GuardedRoute path='/' exact Component={Dashboard} ComponentElse={Login} />
               </Switch>
             </Router>
           </Grid>
