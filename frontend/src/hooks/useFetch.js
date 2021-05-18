@@ -16,7 +16,6 @@ export default function useFetch(url, method, reqBody = null) {
         .then(res => setData(res.data))
         .catch(err => setError(ERROR_CODES_MESSAGES[err.response.status]))
         .finally(() => error !== ERROR_CODES_MESSAGES[0] ? setStatus('error') : setStatus('idle'))
-
     }
     if (body) fetch()
   }, [url, method, body, error])

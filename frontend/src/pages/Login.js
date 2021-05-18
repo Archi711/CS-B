@@ -25,7 +25,6 @@ export default function Login(props) {
 
   useEffect(() => {
     if (data) {
-      console.log(data)
       setUser(data.user)
       setTokens({
         accessToken: data.accessToken,

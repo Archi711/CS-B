@@ -26,14 +26,13 @@ export default function GuardedRoute({ Component, ComponentElse, ...rest }) {
   }, [user, setUser, tokens, setBody])
 
   useEffect(() => {
-    console.log(error, status)
     if (error && status === 'error') onOpen()
   }, [error, status, onOpen])
 
   return status === 'loading' ? <Center width='full' height='lg'><Spinner size='xl' /></Center>
     :
     <>
-      <Route {...rest} render={props => user !== null ? <Component /> : <ComponentElse />} />
+      <Route {...rest} render={() => user !== null ? <Component /> : <ComponentElse />} />
       <ModalPopup
         isOpen={isOpen}
         onClose={onClose}
