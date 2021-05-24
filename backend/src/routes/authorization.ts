@@ -1,23 +1,14 @@
-import { userLogin, getUser, userRelogin } from './../api/dbCommands';
+import { userLogin, userRelogin } from './../api/dbCommands';
 import jwt from 'jsonwebtoken'
 import { Router } from 'express'
 import pool from '../api/db'
 import jwtAuth from '../api/middlewares/jwtAuth';
+import { getUserFromDb } from './user'
 const router = Router()
 
 let refreshTokens = Array<string>();
 
-const getUserFromDb = async (credentialID: number) => {
-  console.log((getUser(credentialID)))
-  try {
-    const user = (await pool.query(getUser(credentialID))).recordset[0]
-    if (!user.FirstName) throw new Error("user data empty")
-    return user
-  }
-  catch (e) {
-    console.log("error getting user from DB ", e)
-  }
-}
+
 
 router.post('/login', async (req, res) => {
   console.log("login")

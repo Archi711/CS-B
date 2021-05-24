@@ -1,17 +1,23 @@
-import React from 'react'
-import { Grid, useBoolean } from '@chakra-ui/react'
-import { useRecoilValue } from 'recoil'
+import React, { useEffect } from 'react'
+import { Grid, Spinner, useBoolean } from '@chakra-ui/react'
+import { useRecoilState, useRecoilValue } from 'recoil'
 import { Button } from '@chakra-ui/button'
+import { useToast } from '@chakra-ui/react'
 
 import { userState } from '../recoil/atoms'
 import UserDataControl from './UserDataControl'
 import { userDataBuider } from '../utils/userDataBuilder'
+import useFetch from '../hooks/useFetch'
+import { tokenSessionState } from '../recoil/selectors'
 
 
 
 export default function UserData(props) {
-  const user = useRecoilValue(userState)
+  const [user, setUser] = useRecoilState(userState)
+  const tokens = useRecoilValue(tokenSessionState)
   const [editMode, setEditMode] = useBoolean(false)
+  const { status, data, error, setBody } = useFetch('/user', 'put', false)
+  const toast = useToast()
 
   const { personalData, contactData, addressData } = userDataBuider(user)
   const handleSaveData = e => {
@@ -19,8 +25,38 @@ export default function UserData(props) {
     const data = new FormData(e.target)
     const updatedData = []
     for (let entry of data.entries()) updatedData.push(entry[1])
-    console.log(updatedData)
+    setBody({
+      data: updatedData,
+      token: tokens.accessToken
+    })
   }
+
+  useEffect(() => {
+    if (!data) return
+    if (data !== user && tokens && status === 'idle') {
+      console.log("setting user")
+      setUser(data)
+      toast.closeAll()
+      toast({
+        status: 'success',
+        title: 'Zapisano dane',
+        duration: 3000,
+        isClosable: true
+      })
+      setEditMode.off()
+    }
+  }, [data, toast, setEditMode, setUser, status, user, tokens])
+
+  useEffect(() => {
+    if (error && status === 'error') {
+      toast({
+        status: status,
+        title: 'Błąd zapisu, spróbuj ponownie',
+        isClosable: true
+      })
+      setEditMode.off()
+    }
+  }, [error, status, toast, setEditMode])
 
   return (
     <Grid
@@ -48,7 +84,7 @@ export default function UserData(props) {
           Edytuj swoje dane
         </Button>
         <Button type='submit' disabled={!editMode} colorScheme='green'>
-          Zapisz dane
+          {status === 'loading' ? <Spinner /> : 'Zapisz dane'}
         </Button>
       </Grid>
     </Grid>

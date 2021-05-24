@@ -2,6 +2,7 @@ import React, { useEffect } from 'react'
 import { debounce } from 'lodash'
 import { Button, Spinner, useToast } from '@chakra-ui/react'
 import { useRecoilState } from 'recoil'
+import { useHistory } from 'react-router-dom'
 
 import { userState } from '../recoil/atoms'
 import { tokenSessionState } from '../recoil/selectors'
@@ -12,6 +13,7 @@ export default function LogoutButton() {
   const [user, setUser] = useRecoilState(userState)
   const [tokens, setTokens] = useRecoilState(tokenSessionState)
   const { setBody, data, status } = useFetch('/logout', 'post')
+  const history = useHistory()
 
   useEffect(() => {
     if (!data) return;
@@ -21,8 +23,9 @@ export default function LogoutButton() {
       duration: 2000,
       isClosable: true
     })
+    history.push('/')
     setUser(null)
-  }, [data, setUser, toast])
+  }, [data, setUser, toast, history])
 
   const handleLogout = (byUser) => e => {
     if (user && tokens.refreshToken) setBody({ token: tokens.refreshToken })

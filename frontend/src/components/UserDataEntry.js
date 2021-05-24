@@ -13,6 +13,7 @@ export default function UserDataEntry(props) {
       <Text fontSize='2xl'>{props.editable ?
         <Input
           variant='flushed'
+          maxLength={entry?.maxLength}
           pattern={entry?.pattern}
           name={entry.fieldName}
           placeholder={typeof entry.value === 'string' ? entry.value.trim() : entry.value}

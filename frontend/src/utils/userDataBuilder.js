@@ -12,7 +12,7 @@ export const userDataBuider = (user) => {
     new rawDataEntry('Nazwisko', user.LastName, 'text', 'LastName')
   ]
   const contactData = [
-    new rawDataEntry('Numer telefonu', user.PhoneNumber, 'number', 'PhoneNumber'),
+    new rawDataEntry('Numer telefonu', user.PhoneNumber, 'tel', 'PhoneNumber', { name: 'maxLength', value: 9 }),
     new rawDataEntry('Adres email', user.Email, 'email', 'Email')
   ]
   const addressData = [
