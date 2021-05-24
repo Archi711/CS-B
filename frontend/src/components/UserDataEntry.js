@@ -1,24 +1,25 @@
+import { FormControl, FormLabel } from '@chakra-ui/form-control'
 import { Input } from '@chakra-ui/input'
-import { Tr, Td } from '@chakra-ui/table'
-import React, { useState } from 'react'
+import { Text } from '@chakra-ui/layout'
+import { useColorModeValue } from '@chakra-ui/react'
+import React from 'react'
 
 export default function UserDataEntry(props) {
   const entry = props.data
-  const [value, setValue] = useState(null)
+  const color = useColorModeValue('blackAlpha.600', 'gray.300')
   return (
-    <Tr>
-      <Td>{entry.label}</Td>
-      <Td>{props.editable ?
+    <FormControl>
+      <FormLabel color={color}>{entry.label}:</FormLabel>
+      <Text fontSize='2xl'>{props.editable ?
         <Input
           variant='flushed'
           pattern={entry?.pattern}
-          value={value}
-          onChange={e => setValue(e.target.value)}
+          name={entry.fieldName}
           placeholder={typeof entry.value === 'string' ? entry.value.trim() : entry.value}
           type={entry.type}>
         </Input> :
         entry.value}
-      </Td>
-    </Tr>
+      </Text>
+    </FormControl>
   )
 }
