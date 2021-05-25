@@ -34,7 +34,6 @@ export default function UserData(props) {
   useEffect(() => {
     if (!data) return
     if (data !== user && tokens && status === 'idle') {
-      console.log("setting user")
       setUser(data)
       toast.closeAll()
       toast({
@@ -83,8 +82,8 @@ export default function UserData(props) {
         <Button onClick={() => setEditMode.on()} disabled={editMode} colorScheme='yellow'>
           Edytuj swoje dane
         </Button>
-        <Button type='submit' disabled={!editMode} colorScheme='green'>
-          {status === 'loading' ? <Spinner /> : 'Zapisz dane'}
+        <Button type='submit' disabled={!editMode} colorScheme='green' isLoading={status === 'loading'}>
+          Zapisz dane
         </Button>
       </Grid>
     </Grid>

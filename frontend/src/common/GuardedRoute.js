@@ -20,10 +20,6 @@ export default function GuardedRoute({ Component, ComponentElse, ...rest }) {
   }, [data, setUser])
 
   useEffect(() => {
-    console.log('user changed', user)
-  }, [user])
-
-  useEffect(() => {
     if (tokens?.accessToken && !user) {
       setBody({ token: tokens.accessToken })
     }

@@ -1,12 +1,12 @@
 import React, { useEffect } from 'react'
 import { debounce } from 'lodash'
-import { Button, Spinner, useToast } from '@chakra-ui/react'
+import { Button, useToast } from '@chakra-ui/react'
 import { useRecoilState } from 'recoil'
 import { useHistory } from 'react-router-dom'
 
 import { userState } from '../recoil/atoms'
 import { tokenSessionState } from '../recoil/selectors'
-import useFetch from '../hooks/useFetch';
+import useFetch from '../hooks/useFetch'
 
 export default function LogoutButton() {
   const toast = useToast()
@@ -16,7 +16,7 @@ export default function LogoutButton() {
   const history = useHistory()
 
   useEffect(() => {
-    if (!data) return;
+    if (!data) return
     toast({
       description: "Pomyślnie wylogowano",
       status: "success",
@@ -34,8 +34,8 @@ export default function LogoutButton() {
   window.addEventListener('beforeunload', debounce(handleLogout(false), 500))
 
   return (
-    <Button onClick={handleLogout(true)}>
-      {status === 'loading' ? <Spinner /> : 'Wyloguj się'}
+    <Button onClick={handleLogout(true)} isLoading={status === 'loading'}>
+      Wyloguj się
     </Button>
   )
 }

@@ -63,9 +63,13 @@ export default function Login(props) {
             <FormHelperText>Twoje hasło</FormHelperText>
           </FormControl>
           <FormControl >
-            <Button type='submit' variant='outline' colorScheme='orange' p={3} isFullWidth>{
-              status === 'loading' ? <Spinner /> : 'Zaloguj'
-            }</Button>
+            <Button
+              type='submit'
+              variant='outline'
+              colorScheme='orange'
+              p={3}
+              isLoading={status === 'loading'}
+              isFullWidth>Zaloguj</Button>
           </FormControl>
         </form>
       </VStack>
