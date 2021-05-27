@@ -11,3 +11,7 @@ export const updateUserData = (login: string, data: []) => {
     res += 'NULL,')
   return res.slice(0, -1)
 }
+
+export const addCase = (login: string, data: string) => `EXEC pAddCase '${data}', '${login}'`
+
+export const getCases = (login: string) => `EXEC pGetClientCases '${login}'`

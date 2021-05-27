@@ -7,7 +7,6 @@ import { updateUserData, getUser, userRelogin } from '../api/dbCommands'
 export const router = Router()
 
 export const getUserFromDb = async (credentialID: number) => {
-  console.log((getUser(credentialID)))
   try {
     const user = (await pool.query(getUser(credentialID))).recordset[0]
     if (!user.FirstName) throw new Error("user data empty")

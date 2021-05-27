@@ -19,7 +19,6 @@ router.post('/login', async (req, res) => {
     if (credentials[0]) {
       const accessToken = jwt.sign({ login }, process.env.ACCESS_SECRET, { expiresIn: '10m' })
       const refreshToken = jwt.sign({ login }, process.env.REFRESH_SECRET)
-      console.table(credentials[0])
       const user = await getUserFromDb(credentials[0].CredentialsID)
       refreshTokens.push(refreshToken)
       res.json({
