@@ -1,25 +1,66 @@
 
 import axios from 'axios'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef, useReducer } from 'react'
 import { ERROR_CODES_MESSAGES } from '../utils/errorMaker'
-export default function useFetch(url, method, reqBody = null) {
-  const [status, setStatus] = useState('idle')
-  const [data, setData] = useState(null)
-  const [error, setError] = useState(ERROR_CODES_MESSAGES[0])
+
+const initialState = {
+  status: 'idle',
+  data: null,
+  error: ERROR_CODES_MESSAGES[0]
+}
+export default function useFetch(url, method, headers, reqBody = null) {
+
   const [body, setBody] = useState(reqBody)
+  const fetchReducer = (state, action) => {
+    switch (action.type) {
+      case 'request':
+        return { ...initialState, status: 'loading' }
+      case 'success':
+        return { ...initialState, status: 'success', data: action.payload }
+      case 'failure':
+        return { ...initialState, status: 'error', error: action.payload }
+      default:
+        return state
+    }
+  }
 
-
+  const [state, dispatch] = useReducer(fetchReducer, initialState)
+  const cancelReq = useRef(false)
+  const cache = useRef([])
   useEffect(() => {
     const fetch = async () => {
-      setStatus('loading')
-      axios[method](`http://${process.env.REACT_APP_API_ADDRESS}${url}`, body)
-        .then(res => setData(res.data))
-        .catch(err => setError(ERROR_CODES_MESSAGES[err.response.status]))
-        .finally(() => error !== ERROR_CODES_MESSAGES[0] ? setStatus('error') : setStatus('idle'))
+      dispatch({ type: 'request' })
+      if (cache.current[url]) {
+        dispatch({ type: 'success', payload: cache.current[url] })
+      }
+      try {
+        const response = await axios({
+          method: method,
+          url: `http://${process.env.REACT_APP_API_ADDRESS}${url}`,
+          data: body,
+          headers: headers,
+        })
+        cache.current[url] = response.data
+        dispatch({ type: 'success', payload: cache.current[url] })
+        if (cancelReq.current) return
+
+      }
+      catch (err) {
+        dispatch({ type: 'failure', payload: ERROR_CODES_MESSAGES[err.response.status] })
+        if (cancelReq.current) return
+      }
     }
     if (body) fetch()
-  }, [url, method, body, error])
+    return () => {
+      cancelReq.current = true
+    }
+    //eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [url, body])
 
-  return { status, data, error, setBody }
+  useEffect(() => {
+    console.log(state)
+  }, [state])
+
+  return { state, setBody }
 
 }

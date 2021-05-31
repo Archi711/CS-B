@@ -8,7 +8,6 @@ import {
   Button,
   VStack,
   useDisclosure,
-  Spinner,
 } from '@chakra-ui/react'
 import { useSetRecoilState } from 'recoil'
 
@@ -21,7 +20,8 @@ export default function Login(props) {
   const { isOpen, onOpen, onClose } = useDisclosure()
   const setUser = useSetRecoilState(userState)
   const setTokens = useSetRecoilState(tokenSessionState)
-  const { status, data, error, setBody } = useFetch(`/login`, 'post', false)
+  const { state, setBody } = useFetch(`/login`, 'post')
+  const { status, data, error } = state
 
   useEffect(() => {
     if (data) {
@@ -33,9 +33,11 @@ export default function Login(props) {
     }
   }, [data, setUser, setTokens])
 
+
   useEffect(() => {
     if (error && status === 'error') onOpen()
   }, [error, status, onOpen])
+
 
   const handleSubmit = e => {
     e.preventDefault()

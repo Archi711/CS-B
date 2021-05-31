@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import { Grid, Spinner, useBoolean } from '@chakra-ui/react'
+import { Grid, useBoolean } from '@chakra-ui/react'
 import { useRecoilState, useRecoilValue } from 'recoil'
 import { Button } from '@chakra-ui/button'
 import { useToast } from '@chakra-ui/react'
@@ -16,24 +16,38 @@ export default function UserData(props) {
   const [user, setUser] = useRecoilState(userState)
   const tokens = useRecoilValue(tokenSessionState)
   const [editMode, setEditMode] = useBoolean(false)
-  const { status, data, error, setBody } = useFetch('/user', 'put', false)
+  const { state, setBody } = useFetch('/user', 'put', false)
+  const { status, data, error } = state
   const toast = useToast()
 
   const { personalData, contactData, addressData } = userDataBuider(user)
   const handleSaveData = e => {
     e.preventDefault()
+    let sendReq = false
     const data = new FormData(e.target)
     const updatedData = []
-    for (let entry of data.entries()) updatedData.push(entry[1])
-    setBody({
-      data: updatedData,
-      token: tokens.accessToken
-    })
+    for (let entry of data.entries()) {
+      updatedData.push(entry[1])
+      if (entry[1].length > 0) sendReq = true
+    }
+    if (sendReq) {
+      setBody({
+        data: updatedData,
+        token: tokens.accessToken
+      })
+    }
+    else {
+      toast({
+        description: 'Podaj wymagane dane i spróbuj ponownie',
+        status: 'warning',
+        duration: 3000
+      })
+    }
   }
 
   useEffect(() => {
     if (!data) return
-    if (data !== user && tokens && status === 'idle') {
+    if (data !== user && tokens) {
       setUser(data)
       toast.closeAll()
       toast({
@@ -81,6 +95,9 @@ export default function UserData(props) {
         gap={3}>
         <Button onClick={() => setEditMode.on()} disabled={editMode} colorScheme='yellow'>
           Edytuj swoje dane
+        </Button>
+        <Button onClick={() => setEditMode.off()} disabled={!editMode} colorScheme='blue'>
+          Anuluj
         </Button>
         <Button type='submit' disabled={!editMode} colorScheme='green' isLoading={status === 'loading'}>
           Zapisz dane

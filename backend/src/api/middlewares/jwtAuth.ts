@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken'
 
 export default function jwtAuth(req: Request, res: Response, next: NextFunction) {
-  const { token } = req.headers || req.body
+  const token = req.headers.token || req.body.token
   if (token == null) res.sendStatus(401)
 
   jwt.verify(token as string, process.env.ACCESS_SECRET, (err: any, login: any) => {

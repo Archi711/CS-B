@@ -12,7 +12,8 @@ export default function LogoutButton() {
   const toast = useToast()
   const [user, setUser] = useRecoilState(userState)
   const [tokens, setTokens] = useRecoilState(tokenSessionState)
-  const { setBody, data, status } = useFetch('/logout', 'post')
+  const { state, setBody } = useFetch('/logout', 'post')
+  const { data, status } = state
   const history = useHistory()
 
   useEffect(() => {

@@ -13,7 +13,6 @@ let refreshTokens = Array<string>();
 router.post('/login', async (req, res) => {
   console.log("login")
   const { login, password } = req.body
-
   try {
     const credentials = (await pool.query(userLogin(login, password))).recordset
     if (credentials[0]) {
