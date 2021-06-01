@@ -13,4 +13,9 @@ Customer Selfservice &amp; Billing System
 
 ## TO-DO
 
+- Add error handling
+- rework modals
+
+## DONE
+
 - api calls hook, for better ux

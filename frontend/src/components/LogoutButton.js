@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { debounce } from 'lodash'
 import { Button, useToast } from '@chakra-ui/react'
 import { useRecoilState } from 'recoil'
@@ -14,10 +14,12 @@ export default function LogoutButton() {
   const [tokens, setTokens] = useRecoilState(tokenSessionState)
   const { state, setBody } = useFetch('/logout', 'post')
   const { data, status } = state
+  const [byUser, setByUser] = useState(false)
   const history = useHistory()
 
   useEffect(() => {
     if (!data) return
+    if (byUser) setTokens({ accessToken: "", refreshToken: "" })
     toast({
       description: "Pomyślnie wylogowano",
       status: "success",
@@ -26,11 +28,11 @@ export default function LogoutButton() {
     })
     history.push('/')
     setUser(null)
-  }, [data, setUser, toast, history])
+  }, [data, setUser, toast, history, byUser, setTokens])
 
-  const handleLogout = (byUser) => e => {
+  const handleLogout = byUser => e => {
     if (user && tokens.refreshToken) setBody({ token: tokens.refreshToken })
-    if (byUser) setTokens({ accessToken: "", refreshToken: "" })
+    if (byUser) setByUser(true)
   }
   window.addEventListener('beforeunload', debounce(handleLogout(false), 500))
 

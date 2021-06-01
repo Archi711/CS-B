@@ -8,9 +8,10 @@ const initialState = {
   data: null,
   error: ERROR_CODES_MESSAGES[0]
 }
-export default function useFetch(url, method, headers, reqBody = null) {
+export default function useFetch(url, method, headers, reqBody = null, OUTSIDE = false) {
 
   const [body, setBody] = useState(reqBody)
+  const reqUrl = OUTSIDE ? OUTSIDE : `http://${process.env.REACT_APP_API_ADDRESS}${url}`
   const fetchReducer = (state, action) => {
     switch (action.type) {
       case 'request':
@@ -36,7 +37,7 @@ export default function useFetch(url, method, headers, reqBody = null) {
       try {
         const response = await axios({
           method: method,
-          url: `http://${process.env.REACT_APP_API_ADDRESS}${url}`,
+          url: reqUrl,
           data: body,
           headers: headers,
         })
@@ -57,9 +58,9 @@ export default function useFetch(url, method, headers, reqBody = null) {
     //eslint-disable-next-line react-hooks/exhaustive-deps
   }, [url, body])
 
-  useEffect(() => {
-    console.log(state)
-  }, [state])
+  // useEffect(() => {
+  //   console.log(state)
+  // }, [state])
 
   return { state, setBody }
 
