@@ -5,7 +5,6 @@ import dotenv from 'dotenv'
 
 dotenv.config()
 
-import pool from './api/db'
 import routes from './routes'
 
 const app = express()
@@ -16,8 +15,6 @@ routes.forEach(route => {
   app.use(route)
 });
 
-
-pool.connect().then(() => {
-  app.listen(process.env.APP_PORT, () => console.log(`App on port: ${process.env.APP_PORT}`))
+app.listen(process.env.APP_PORT, () => {
+  console.log(`Server running on port: ${process.env.APP_PORT} `)
 })
-
