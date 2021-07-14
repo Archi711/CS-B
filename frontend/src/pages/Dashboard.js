@@ -1,10 +1,15 @@
+import { VStack } from '@chakra-ui/react'
 import React from 'react'
-import { useRecoilValue } from 'recoil'
-import { userState } from '../recoil/atoms'
 
-export default function Dashboard(props) {
-  const user = useRecoilValue(userState)
+import UserData from '../components/UserData'
+
+
+
+export default function Dashboard() {
+
   return (
-    <div>Hello {user.FirstName}</div>
+    <VStack as='main'>
+      <UserData />
+    </VStack>
   )
 }

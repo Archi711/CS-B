@@ -13,7 +13,8 @@ export default function GuardedRoute({ Component, ComponentElse, ...rest }) {
   const { isOpen, onOpen, onClose } = useDisclosure()
   const tokens = useRecoilValue(tokenSessionState)
   const [user, setUser] = useRecoilState(userState)
-  const { status, data, error, setBody } = useFetch(`/relogin`, 'post', false)
+  const { state, setBody } = useFetch(`/relogin`, 'post', false)
+  const { data, status, error } = state
 
   useEffect(() => {
     setUser(data)

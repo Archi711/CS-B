@@ -1,16 +1,18 @@
-import React from 'react';
+import React from 'react'
 import {
   ChakraProvider,
   Box,
   Grid,
   theme,
-} from '@chakra-ui/react';
-import { RecoilRoot } from 'recoil';
-import { BrowserRouter as Router, Switch } from 'react-router-dom'
+} from '@chakra-ui/react'
+import { RecoilRoot } from 'recoil'
+import { BrowserRouter as Router, Switch, Route } from 'react-router-dom'
 import Header from './components/Header'
-import Dashboard from './pages/Dashboard';
-import GuardedRoute from './common/GuardedRoute';
-import Login from './pages/Login';
+import Dashboard from './pages/Dashboard'
+import GuardedRoute from './common/GuardedRoute'
+import Login from './pages/Login'
+import Cases from './pages/Cases'
+import NotFound from './pages/NotFound'
 
 function App() {
   return (
@@ -22,13 +24,15 @@ function App() {
               <Header></Header>
               <Switch>
                 <GuardedRoute path='/' exact Component={Dashboard} ComponentElse={Login} />
+                <GuardedRoute path='/cases' exact Component={Cases} ComponentElse={Login} />
+                <Route component={NotFound} />
               </Switch>
             </Router>
           </Grid>
         </Box>
       </RecoilRoot>
     </ChakraProvider>
-  );
+  )
 }
 
-export default App;
+export default App
