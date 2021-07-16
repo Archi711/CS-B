@@ -19,21 +19,24 @@ export default function Case(props) {
       <Tr
         cursor='pointer'
         onClick={clickHandler}
+        maxW='full'
         _hover={{ backgroundColor: hoverColor }}>
 
         <Td><Badge>{Status}</Badge></Td>
         <Td><Text>{CaseNumber}</Text></Td>
         {
-          props.allRows ? <> <Td>
-            <Text as='time' dateTime={new Date(SendDate).toISOString()}>{new Date(SendDate).toLocaleDateString()}</Text></Td>
-            <Td><Text isTruncated>{Description}</Text></Td>
+          props.allRows ? <>
+            <Td>
+              <Text as='time' dateTime={new Date(SendDate).toISOString()}>{new Date(SendDate).toLocaleDateString()}</Text>
+            </Td>
+            <Td><Text isTruncated maxW='48'>{Description}</Text></Td>
             {
               ClosingDate ?
                 <>
+                  <Td><Text maxW='48' isTruncated>{Answer}</Text></Td>
                   <Td>
                     <Text as='time' dateTime={new Date(ClosingDate).toISOString()}>{new Date(ClosingDate).toLocaleDateString()}</Text>
                   </Td>
-                  <Td><Text isTruncated>{Answer}</Text></Td>
                 </> :
                 <Td colSpan="2" textAlign="center">sprawa w realizacji</Td>
             }

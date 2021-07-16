@@ -1,12 +1,13 @@
-import { Center, Spinner, useBreakpointValue, useDisclosure } from '@chakra-ui/react'
-import { Table, Tbody, Thead, Tr, Th } from '@chakra-ui/table'
+import { Button, Center, Flex, Spacer, Spinner, useDisclosure, Text } from '@chakra-ui/react'
 import React, { useEffect, useState } from 'react'
 import { useRecoilValue } from 'recoil'
 import { useHistory } from 'react-router-dom'
-import Case from '../components/Case'
+
 import useFetch from '../hooks/useFetch'
 import { tokenSessionState } from '../recoil/selectors'
 import ModalPopup from '../common/ModalPopup'
+import CasesTable from '../components/CasesTable'
+import AddCase from '../components/AddCase'
 
 export default function Cases() {
   const { accessToken } = useRecoilValue(tokenSessionState)
@@ -14,24 +15,8 @@ export default function Cases() {
   const { onClose, onOpen, isOpen } = useDisclosure()
   const { status, data, error } = state
   const [cases, setCases] = useState([])
-  const [activeCase, setActiveCase] = useState(null)
-
+  const [addMode, setAddMode] = useState(false)
   const history = useHistory()
-  const rows = useBreakpointValue({
-    base: false,
-    lg: true
-  })
-  const headings = [
-    'status', 'numer sprawy', 'data wysłania', 'opis sprawy', 'odpowiedź', 'data zamknięcia'
-  ]
-
-  const caseDetailsHandler = caseData => {
-    if (caseData && JSON.stringify(activeCase) !== JSON.stringify(caseData)) {
-      setActiveCase(caseData)
-    }
-    onOpen()
-    console.log(activeCase)
-  }
 
   useEffect(() => {
     if (error.heading.length) onOpen()
@@ -45,49 +30,39 @@ export default function Cases() {
 
   useEffect(() => { setBody(1) }, [setBody])
 
+  const addHandler = cases => {
+    setCases(cases)
+    setAddMode(false)
+  }
+
+  useEffect(() => { }, [addMode])
+
+
+  const ErrorModal = <ModalPopup
+    variant='error'
+    message={error}
+    title='Wystąpił błąd'
+    isOpen={isOpen}
+    onClose={() => { history.push('/'); onClose() }} />
 
   return status === 'loading' ? <Center><Spinner size='lg' /></Center> :
-    <>
-      <Table overflowX='scroll'>
-        <Thead>
-          <Tr>
-            {headings.map((h, i) => rows || i < 2 ? <Th key={h}>{h}</Th> : null)}
-          </Tr>
-        </Thead>
-        <Tbody>
-          {
-            cases?.map(cltCase =>
-              <Case
-                allRows={rows}
-                showCase={caseDetailsHandler}
-                cltCase={cltCase}
-                key={cltCase.CaseNumber} />
-            )
-          }
-        </Tbody>
-      </Table>
+    <Flex flexDir='column'>
+      <Flex m={3}>
+        <Text>Wybierz sprawę, aby wyświelić szczegóły</Text>
+        <Spacer />
+        <Button
+          onClick={() => setAddMode(true)}
+          isDisabled={addMode}
+          colorScheme='orange'>
+          Dodaj sprawę
+        </Button>
+      </Flex>
       {
-        activeCase ? <ModalPopup
-          headings={headings}
-          variant='case'
-          cltCase={activeCase}
-          onClose={onClose}
-          isOpen={isOpen}
-        /> : null
+        addMode ? <AddCase handleAdded={addHandler} /> : <CasesTable cases={cases} />
       }
       {
-        error.heading.length ?
-          <ModalPopup
-            variant='error'
-            message={error}
-            title='Wystąpił błąd'
-            isOpen={isOpen}
-            onClose={
-              e => {
-                history.push('/')
-              }
-            } /> : null
+        error.heading.length ? ErrorModal : null
       }
-    </>
+    </Flex>
 
 }
