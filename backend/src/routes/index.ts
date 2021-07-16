@@ -1,4 +1,5 @@
 
 import authorization from './authorization'
 import user from "./user"
-export default [authorization, user]
+import cases from "./cases"
+export default [authorization, user, cases]

@@ -9,85 +9,94 @@ import { tokenSessionState } from '../recoil/selectors'
 import ModalPopup from '../common/ModalPopup'
 
 export default function Cases() {
-  const { accessToken } = useRecoilValue(tokenSessionState)
-  const { state, setBody } = useFetch('/cases', 'get', { token: accessToken })
-  const { onClose, onOpen, isOpen } = useDisclosure()
-  const { status, data, error } = state
-  const [cases, setCases] = useState([])
-  const [activeCase, setActiveCase] = useState(null)
+  const { accessToken } = useRecoilValue(tokenSessionState);
+  const { state, setBody } = useFetch('/cases', 'get', { token: accessToken });
+  const { onClose, onOpen, isOpen } = useDisclosure();
+  const { status, data, error } = state;
+  const [cases, setCases] = useState([]);
+  const [activeCase, setActiveCase] = useState(null);
 
-  const history = useHistory()
+  const history = useHistory();
   const rows = useBreakpointValue({
     base: false,
-    lg: true
-  })
+    lg: true,
+  });
   const headings = [
-    'status', 'numer sprawy', 'data wysłania', 'opis sprawy', 'odpowiedź', 'data zamknięcia'
-  ]
+    'status',
+    'numer sprawy',
+    'data wysłania',
+    'opis sprawy',
+    'odpowiedź',
+    'data zamknięcia',
+  ];
 
   const caseDetailsHandler = caseData => {
     if (caseData && JSON.stringify(activeCase) !== JSON.stringify(caseData)) {
-      setActiveCase(caseData)
+      setActiveCase(caseData);
     }
-    onOpen()
-    console.log(activeCase)
-  }
+    onOpen();
+    console.log(activeCase);
+  };
 
   useEffect(() => {
-    if (error.heading.length) onOpen()
-  }, [error, onOpen])
+    if (error.heading.length) onOpen();
+  }, [error, onOpen]);
 
   useEffect(() => {
     if (JSON.stringify(data) !== JSON.stringify(cases)) {
-      setCases(data)
+      setCases(data);
     }
-  }, [data, setCases, cases])
+  }, [data, setCases, cases]);
 
-  useEffect(() => { setBody(1) }, [setBody])
+  useEffect(() => {
+    setBody(1);
+  }, [setBody]);
 
-
-  return status === 'loading' ? <Center><Spinner size='lg' /></Center> :
+  return status === 'loading' ? (
+    <Center>
+      <Spinner size="lg" />
+    </Center>
+  ) : (
     <>
-      <Table overflowX='scroll'>
+      <Table overflowX="scroll">
         <Thead>
           <Tr>
-            {headings.map((h, i) => rows || i < 2 ? <Th key={h}>{h}</Th> : null)}
+            {headings.map((h, i) =>
+              rows || i < 2 ? <Th key={h}>{h}</Th> : null
+            )}
           </Tr>
         </Thead>
         <Tbody>
-          {
-            cases?.map(cltCase =>
-              <Case
-                allRows={rows}
-                showCase={caseDetailsHandler}
-                cltCase={cltCase}
-                key={cltCase.CaseNumber} />
-            )
-          }
+          {cases?.map(cltCase => (
+            <Case
+              allRows={rows}
+              showCase={caseDetailsHandler}
+              cltCase={cltCase}
+              key={cltCase.CaseNumber}
+            />
+          ))}
         </Tbody>
       </Table>
-      {
-        activeCase ? <ModalPopup
+      {activeCase ? (
+        <ModalPopup
           headings={headings}
-          variant='case'
+          variant="case"
           cltCase={activeCase}
           onClose={onClose}
           isOpen={isOpen}
-        /> : null
-      }
-      {
-        error.heading.length ?
-          <ModalPopup
-            variant='error'
-            message={error}
-            title='Wystąpił błąd'
-            isOpen={isOpen}
-            onClose={
-              e => {
-                history.push('/')
-              }
-            } /> : null
-      }
+        />
+      ) : null}
+      {error.heading.length ? (
+        <ModalPopup
+          variant="error"
+          message={error}
+          title="Wystąpił błąd"
+          isOpen={isOpen}
+          onClose={e => {
+            history.push('/');
+          }}
+        />
+      ) : null}
     </>
-
+  );
 }

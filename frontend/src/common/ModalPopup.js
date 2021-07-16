@@ -30,40 +30,50 @@ export const ErrorModal = ({ title, message, ...props }) =>
     </ModalContent>
   </Modal>
 
-export const CaseModal = (props) => {
+export const CaseModal = props => {
+  const SendDate = new Date(+props.cltCase.SendDate).toLocaleDateString('pl');
+  const ClosingDate = props.cltCase.ClosingDate
+    ? new Date(+props.cltCase.ClosingDate).toLocaleDateString('pl')
+    : '';
   const cltCase = [
     props.cltCase.Status,
     props.cltCase.CaseNumber,
-    props.cltCase.SendDate,
+    SendDate,
     props.cltCase.Description,
     props.cltCase.Answer,
-    props.cltCase.ClosingDate
-  ]
+    ClosingDate,
+  ];
   return (
-    <Modal isOpen={props.isOpen} onClose={props.onClose} size='xl'>
+    <Modal isOpen={props.isOpen} onClose={props.onClose} size="xl">
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader >Sprawa nr: {props.cltCase.CaseNumber}</ModalHeader>
+        <ModalHeader>Sprawa nr: {props.cltCase.CaseNumber}</ModalHeader>
         <ModalBody>
-          {
-            props.headings.map((text, idx) => <CaseDetail heading={text} key={text.concat('key')} data={cltCase[idx]} fallback='nie udzielono' />)
-          }
+          {props.headings.map((text, idx) => (
+            <CaseDetails
+              heading={text}
+              key={text.concat('key')}
+              data={cltCase[idx]}
+              fallback="nie udzielono"
+            />
+          ))}
         </ModalBody>
         <ModalFooter>
-          <Button colorScheme='green' width='full' onClick={props.onClose}>
+          <Button colorScheme="green" width="full" onClick={props.onClose}>
             Zamknij
-        </Button>
+          </Button>
         </ModalFooter>
       </ModalContent>
-    </Modal >
-  )
-}
+    </Modal>
+  );
+};
 
-const CaseDetail = props =>
+const CaseDetails = props => (
   <>
-    <Flex flexDir='column' p={3}>
+    <Flex flexDir="column" p={3}>
       <Box fontWeight="bold">{props.heading}:</Box>
       <Box paddingLeft={2}>{props.data || props.fallback}</Box>
     </Flex>
     <Divider />
   </>
+);
