@@ -1,26 +1,47 @@
 import { Router } from "express"
+import { queryOptions } from "harperive"
+import { nanoid } from "nanoid"
+
+import { getClientID } from "../api/dbActions"
+import { cltCases } from "../api/sqlQueries"
 
 import client from "../api/db"
 import jwtAuth from "../api/middlewares/jwtAuth"
 
 const router = Router()
 
+interface ICase {
+  Answer: string
+  CaseNumber: string
+  ClosingDate: number
+  Description: string
+  IDClient: string
+  SendDate: number
+  Status: "przyjęta" | "w realizacji" | "zamknięta"
+}
+
 router.post("/cases", jwtAuth, async (req, res) => {
   console.log("cases add")
   const { data } = req.body
   const { login } = req.body.login
+  const newCase: ICase = {
+    Answer: null,
+    CaseNumber: `SC/2021/${nanoid(4)}`,
+    ClosingDate: null,
+    Description: data,
+    IDClient: null,
+    SendDate: Date.now(),
+    Status: "przyjęta",
+  }
   try {
-    const cases = [
-      {
-        CaseNumber: "Test",
-        Description: "Sprawa testowa",
-        Answer: "",
-        Status: "przyjęta",
-        SendDate: "1626444379631",
-        ClosingDate: "",
-        IDClient: "81a5aa77-cde7-4450-b9b9-d7313473814f",
-      },
-    ]
+    const clientID = await getClientID(login)
+    newCase.IDClient = clientID
+    const addCaseOptions: queryOptions = {
+      table: "Cases",
+      records: [newCase],
+    }
+    await client.insert(addCaseOptions)
+    const cases = (await client.query(cltCases(clientID))).data
     return res.json(cases)
   } catch (e) {
     console.log("error saving case to db: ", e)
@@ -31,21 +52,13 @@ router.post("/cases", jwtAuth, async (req, res) => {
 router.get("/cases", jwtAuth, async (req, res) => {
   console.log("cases get")
   const { login } = req.body.login
-
   try {
-    return res.json([
-      {
-        CaseNumber: "Test",
-        Description: "Sprawa testowa",
-        Answer: null,
-        Status: "przyjęta",
-        SendDate: 1626444379631,
-        ClosingDate: null,
-        IDClient: "81a5aa77-cde7-4450-b9b9-d7313473814f",
-      },
-    ])
+    const clientID = await getClientID(login)
+    const cases = (await client.query(cltCases(clientID))).data
+    return res.json(cases)
   } catch (e) {
     console.log("error getting user cases from db: ", e)
+    return res.sendStatus(500)
   }
 })
 

@@ -15,6 +15,9 @@ export const clientFullData = (clientID: string) =>
 export const addressID = (clientID: string) =>
   `SELECT IDAddress FROM CS_B.Clients WHERE ClientID = '${clientID}'`
 
+export const cltCases = (clientID: string) =>
+  `SELECT * FROM CS_B.Cases WHERE IDClient = '${clientID}'`
+
 // mysql_real_escape_string
 function esc(str: string) {
   return str.replace(/[\0\x08\x09\x1a\n\r"'\\\%]/g, function (char) {

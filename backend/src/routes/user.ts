@@ -58,8 +58,6 @@ router.put("/user", jwtAuth, async (req, res) => {
     table: "Addresses",
     records: [addressDBRecord],
   }
-  console.table(contactUpdateOptions)
-  console.table(addressUpdateOptions)
   try {
     client.update(contactUpdateOptions)
     client.update(addressUpdateOptions)

@@ -9,7 +9,6 @@ export default function jwtAuth(
   const { token } = Object.keys(req.body).includes("token")
     ? req.body
     : req.headers
-  console.log(req.body && req.headers.token)
   if (token == null) res.sendStatus(401)
 
   jwt.verify(token, process.env.ACCESS_SECRET, (err: any, login: any) => {
