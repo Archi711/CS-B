@@ -9,7 +9,6 @@ router.post("/cases", jwtAuth, async (req, res) => {
   console.log("cases add")
   const { data } = req.body
   const { login } = req.body.login
-  console.log(data)
   try {
     const cases = [
       {
@@ -38,10 +37,10 @@ router.get("/cases", jwtAuth, async (req, res) => {
       {
         CaseNumber: "Test",
         Description: "Sprawa testowa",
-        Answer: "",
+        Answer: null,
         Status: "przyjęta",
-        SendDate: "1626444379631",
-        ClosingDate: "",
+        SendDate: 1626444379631,
+        ClosingDate: null,
         IDClient: "81a5aa77-cde7-4450-b9b9-d7313473814f",
       },
     ])

@@ -6,10 +6,9 @@ import React from 'react'
 
 
 export default function Case(props) {
-  let { Answer, CaseNumber, ClosingDate, Description, SendDate, Status } =
+  const { Answer, CaseNumber, ClosingDate, Description, SendDate, Status } =
     props.cltCase;
-  SendDate = +SendDate;
-  ClosingDate = +ClosingDate;
+
   const hoverColor = useColorModeValue('gray.100', 'gray.700');
 
   const clickHandler = e => {
@@ -21,6 +20,7 @@ export default function Case(props) {
       <Tr
         cursor="pointer"
         onClick={clickHandler}
+        maxW="full"
         _hover={{ backgroundColor: hoverColor }}
       >
         <Td>
@@ -31,17 +31,23 @@ export default function Case(props) {
         </Td>
         {props.allRows ? (
           <>
-            {' '}
             <Td>
               <Text as="time" dateTime={new Date(SendDate).toISOString()}>
                 {new Date(SendDate).toLocaleDateString()}
               </Text>
             </Td>
             <Td>
-              <Text isTruncated>{Description}</Text>
+              <Text isTruncated maxW="48">
+                {Description}
+              </Text>
             </Td>
             {ClosingDate ? (
               <>
+                <Td>
+                  <Text maxW="48" isTruncated>
+                    {Answer}
+                  </Text>
+                </Td>
                 <Td>
                   <Text
                     as="time"
@@ -50,12 +56,9 @@ export default function Case(props) {
                     {new Date(ClosingDate).toLocaleDateString()}
                   </Text>
                 </Td>
-                <Td>
-                  <Text isTruncated>{Answer}</Text>
-                </Td>
               </>
             ) : (
-              <Td colSpan="2" textAlign="center">
+              <Td colSpan="2" textAlign="center" color="yellow.100">
                 sprawa w realizacji
               </Td>
             )}

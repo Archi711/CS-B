@@ -31,17 +31,15 @@ export const ErrorModal = ({ title, message, ...props }) =>
   </Modal>
 
 export const CaseModal = props => {
-  const SendDate = new Date(+props.cltCase.SendDate).toLocaleDateString('pl');
-  const ClosingDate = props.cltCase.ClosingDate
-    ? new Date(+props.cltCase.ClosingDate).toLocaleDateString('pl')
-    : '';
   const cltCase = [
     props.cltCase.Status,
     props.cltCase.CaseNumber,
-    SendDate,
+    new Date(props.cltCase.SendDate).toLocaleDateString('pl'),
     props.cltCase.Description,
     props.cltCase.Answer,
-    ClosingDate,
+    props.cltCase.ClosingDate
+      ? new Date(props.cltCase.ClosingDate).toLocaleDateString('pl')
+      : '',
   ];
   return (
     <Modal isOpen={props.isOpen} onClose={props.onClose} size="xl">
@@ -50,7 +48,7 @@ export const CaseModal = props => {
         <ModalHeader>Sprawa nr: {props.cltCase.CaseNumber}</ModalHeader>
         <ModalBody>
           {props.headings.map((text, idx) => (
-            <CaseDetails
+            <CaseDetail
               heading={text}
               key={text.concat('key')}
               data={cltCase[idx]}
@@ -68,7 +66,7 @@ export const CaseModal = props => {
   );
 };
 
-const CaseDetails = props => (
+const CaseDetail = props => (
   <>
     <Flex flexDir="column" p={3}>
       <Box fontWeight="bold">{props.heading}:</Box>
