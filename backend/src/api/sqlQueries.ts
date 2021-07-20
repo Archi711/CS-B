@@ -13,10 +13,10 @@ export const clientFullData = (clientID: string) =>
     clientID
   )}'`
 export const addressID = (clientID: string) =>
-  `SELECT IDAddress FROM CS_B.Clients WHERE ClientID = '${clientID}'`
+  `SELECT IDAddress FROM CS_B.Clients WHERE ClientID = '${esc(clientID)}'`
 
 export const cltCases = (clientID: string) =>
-  `SELECT * FROM CS_B.Cases WHERE IDClient = '${clientID}'`
+  `SELECT * FROM CS_B.Cases WHERE IDClient = '${esc(clientID)}'`
 
 // mysql_real_escape_string
 function esc(str: string) {

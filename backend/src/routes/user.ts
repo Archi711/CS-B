@@ -1,6 +1,6 @@
 import { Router } from "express"
 import client from "../api/db"
-import { getClientID, getUserFromDB } from "../api/dbActions"
+import { getUserFromDB } from "../api/dbActions"
 import { addressID as addressIDQuery } from "../api/sqlQueries"
 import jwtAuth from "../api/middlewares/jwtAuth"
 
@@ -22,11 +22,9 @@ interface IAddressRecord {
 
 router.put("/user", jwtAuth, async (req, res) => {
   console.log("update user")
-  let clientID, addressID
-  const { login } = req.body.login
+  let addressID
+  const { clientID } = req.body.login
   try {
-    clientID = await getClientID(login)
-    if (clientID === 401) return res.sendStatus(401)
     addressID = await client.query(addressIDQuery(clientID))
     console.log(addressID)
     addressID = addressID.data[0]?.IDAddress
@@ -61,7 +59,7 @@ router.put("/user", jwtAuth, async (req, res) => {
   try {
     client.update(contactUpdateOptions)
     client.update(addressUpdateOptions)
-    const user = await getUserFromDB(login)
+    const user = await getUserFromDB(clientID)
     return res.status(200).json(user)
   } catch (e) {
     console.log("Error updating user in db: ", e)

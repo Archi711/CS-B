@@ -11,12 +11,12 @@ export default function jwtAuth(
     : req.headers
   if (token == null) res.sendStatus(401)
 
-  jwt.verify(token, process.env.ACCESS_SECRET, (err: any, login: any) => {
+  jwt.verify(token, process.env.ACCESS_SECRET, (err: any, clientID: any) => {
     if (err) {
       console.log("auth err: ", err)
       return res.sendStatus(403)
     }
-    req.body = { ...req.body, login }
+    req.body = { ...req.body, clientID }
     next()
   })
 }

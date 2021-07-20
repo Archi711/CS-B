@@ -2,7 +2,6 @@ import { Router } from "express"
 import { queryOptions } from "harperive"
 import { nanoid } from "nanoid"
 
-import { getClientID } from "../api/dbActions"
 import { cltCases } from "../api/sqlQueries"
 
 import client from "../api/db"
@@ -23,7 +22,7 @@ interface ICase {
 router.post("/cases", jwtAuth, async (req, res) => {
   console.log("cases add")
   const { data } = req.body
-  const { login } = req.body.login
+  const { clientID } = req.body.clientID
   const newCase: ICase = {
     Answer: null,
     CaseNumber: `SC/2021/${nanoid(4)}`,
@@ -34,7 +33,6 @@ router.post("/cases", jwtAuth, async (req, res) => {
     Status: "przyjęta",
   }
   try {
-    const clientID = await getClientID(login)
     newCase.IDClient = clientID
     const addCaseOptions: queryOptions = {
       table: "Cases",
@@ -51,9 +49,8 @@ router.post("/cases", jwtAuth, async (req, res) => {
 
 router.get("/cases", jwtAuth, async (req, res) => {
   console.log("cases get")
-  const { login } = req.body.login
+  const { clientID } = req.body.clientID
   try {
-    const clientID = await getClientID(login)
     const cases = (await client.query(cltCases(clientID))).data
     return res.json(cases)
   } catch (e) {
