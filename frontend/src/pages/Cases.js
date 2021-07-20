@@ -10,59 +10,69 @@ import CasesTable from '../components/CasesTable'
 import AddCase from '../components/AddCase'
 
 export default function Cases() {
-  const { accessToken } = useRecoilValue(tokenSessionState)
-  const { state, setBody } = useFetch('/cases', 'get', { token: accessToken })
-  const { onClose, onOpen, isOpen } = useDisclosure()
-  const { status, data, error } = state
-  const [cases, setCases] = useState([])
-  const [addMode, setAddMode] = useState(false)
-  const history = useHistory()
+  const { accessToken } = useRecoilValue(tokenSessionState);
+  const { state, setBody } = useFetch('/cases', 'get', { token: accessToken });
+  const { onClose, onOpen, isOpen } = useDisclosure();
+  const { status, data, error } = state;
+  const [cases, setCases] = useState([]);
+  const [addMode, setAddMode] = useState(false);
+  const history = useHistory();
 
   useEffect(() => {
-    if (error.heading.length) onOpen()
-  }, [error, onOpen])
+    if (error.heading.length) onOpen();
+  }, [error, onOpen]);
 
   useEffect(() => {
     if (JSON.stringify(data) !== JSON.stringify(cases)) {
-      setCases(data)
+      setCases(data);
     }
-  }, [data, setCases, cases])
+  }, [data, setCases, cases]);
 
-  useEffect(() => { setBody(1) }, [setBody])
+  useEffect(() => {
+    setBody(1);
+  }, [setBody]);
 
   const addHandler = cases => {
-    setCases(cases)
-    setAddMode(false)
-  }
+    setCases(cases);
+    setAddMode(false);
+  };
 
-  useEffect(() => { }, [addMode])
+  const ErrorModal = (
+    <ModalPopup
+      variant="error"
+      message={error}
+      title="Wystąpił błąd"
+      isOpen={isOpen}
+      onClose={() => {
+        history.push('/');
+        onClose();
+      }}
+    />
+  );
 
-
-  const ErrorModal = <ModalPopup
-    variant='error'
-    message={error}
-    title='Wystąpił błąd'
-    isOpen={isOpen}
-    onClose={() => { history.push('/'); onClose() }} />
-
-  return status === 'loading' ? <Center><Spinner size='lg' /></Center> :
-    <Flex flexDir='column'>
+  return status === 'loading' ? (
+    <Center>
+      <Spinner size="lg" />
+    </Center>
+  ) : (
+    <Flex flexDir="column">
       <Flex m={3}>
         <Text>Wybierz sprawę, aby wyświelić szczegóły</Text>
         <Spacer />
         <Button
           onClick={() => setAddMode(true)}
           isDisabled={addMode}
-          colorScheme='orange'>
+          colorScheme="orange"
+        >
           Dodaj sprawę
         </Button>
       </Flex>
-      {
-        addMode ? <AddCase handleAdded={addHandler} /> : <CasesTable cases={cases} />
-      }
-      {
-        error.heading.length ? ErrorModal : null
-      }
+      {addMode ? (
+        <AddCase handleAdded={addHandler} />
+      ) : (
+        <CasesTable cases={cases} />
+      )}
+      {error.heading.length ? ErrorModal : null}
     </Flex>
-
+  );
 }

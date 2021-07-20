@@ -18,7 +18,6 @@ router.post("/login", async (req, res) => {
     })
     const refreshToken = jwt.sign({ login }, process.env.REFRESH_SECRET)
     refreshTokens.push(refreshToken)
-    console.log(user)
     res.json({
       accessToken,
       refreshToken,
