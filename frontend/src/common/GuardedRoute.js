@@ -3,43 +3,38 @@ import { Route } from 'react-router-dom'
 import { useRecoilValue, useRecoilState } from 'recoil'
 import { userState } from '../recoil/atoms'
 import { tokenSessionState } from '../recoil/selectors'
-import useFetch from '../hooks/useFetch'
-import ModalPopup from './ModalPopup'
-import { useDisclosure } from '@chakra-ui/hooks'
-import { Center } from '@chakra-ui/react'
-import { Spinner } from '@chakra-ui/spinner'
+import useFetch from '../hooks/useFetch';
+import { Center } from '@chakra-ui/react';
+import { Spinner } from '@chakra-ui/spinner';
 
 export default function GuardedRoute({ Component, ComponentElse, ...rest }) {
-  const { isOpen, onOpen, onClose } = useDisclosure()
-  const tokens = useRecoilValue(tokenSessionState)
-  const [user, setUser] = useRecoilState(userState)
-  const { state, setBody } = useFetch(`/relogin`, 'post', false)
-  const { data, status, error } = state
+  const tokens = useRecoilValue(tokenSessionState);
+  const [user, setUser] = useRecoilState(userState);
+  const { state, setBody } = useFetch(`/relogin`, 'post', false);
+  const { data, status, error } = state;
 
   useEffect(() => {
-    setUser(data)
-  }, [data, setUser])
+    setUser(data);
+  }, [data, setUser]);
 
   useEffect(() => {
     if (tokens?.accessToken && !user) {
-      setBody({ token: tokens.accessToken })
+      setBody({ token: tokens.accessToken });
     }
-  }, [user, setUser, tokens, setBody])
+  }, [user, setUser, tokens, setBody]);
 
   useEffect(() => {
-    if (error && status === 'error') onOpen()
-  }, [error, status, onOpen])
+    if (error.code) throw error;
+  }, [error]);
 
-  return status === 'loading' ? <Center width='full' height='lg'><Spinner size='xl' /></Center>
-    :
-    <>
-      <Route {...rest} render={() => user !== null ? <Component /> : <ComponentElse />} />
-      <ModalPopup
-        isOpen={isOpen}
-        onClose={onClose}
-        title='Wystąpił błąd'
-        variant='error'
-        message={error}
-      />
-    </>
+  return status === 'loading' ? (
+    <Center width="full" height="lg">
+      <Spinner size="xl" />
+    </Center>
+  ) : (
+    <Route
+      {...rest}
+      render={() => (user !== null ? <Component /> : <ComponentElse />)}
+    />
+  );
 }

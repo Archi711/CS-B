@@ -7,82 +7,73 @@ import {
   Input,
   Button,
   VStack,
-  useDisclosure,
-} from '@chakra-ui/react'
-import { useSetRecoilState } from 'recoil'
+} from '@chakra-ui/react';
+import { useSetRecoilState } from 'recoil';
 
-import { userState } from '../recoil/atoms'
-import { tokenSessionState } from '../recoil/selectors'
-import useFetch from '../hooks/useFetch'
-import ModalPopup from '../common/ModalPopup'
+import { userState } from '../recoil/atoms';
+import { tokenSessionState } from '../recoil/selectors';
+import useFetch from '../hooks/useFetch';
 
-export default function Login(props) {
-  const { isOpen, onOpen, onClose } = useDisclosure()
-  const setUser = useSetRecoilState(userState)
-  const setTokens = useSetRecoilState(tokenSessionState)
-  const { state, setBody } = useFetch(`/login`, 'post')
-  const { status, data, error } = state
+export default function Login() {
+  const setUser = useSetRecoilState(userState);
+  const setTokens = useSetRecoilState(tokenSessionState);
+  const { state, setBody } = useFetch(`/login`, 'post');
+  const { status, data, error } = state;
 
   useEffect(() => {
     if (data) {
-      setUser(data.user)
+      setUser(data.user);
       setTokens({
         accessToken: data.accessToken,
-        refreshToken: data.refreshToken
-      })
+        refreshToken: data.refreshToken,
+      });
     }
-  }, [data, setUser, setTokens])
-
+  }, [data, setUser, setTokens]);
 
   useEffect(() => {
-    if (error && status === 'error') onOpen()
-  }, [error, status, onOpen])
-
+    if (error.code) throw error;
+  }, [error]);
 
   const handleSubmit = e => {
-    e.preventDefault()
+    e.preventDefault();
     const authData = {
       login: e.target[0].value,
-      password: e.target[1].value
-    }
-    setBody(authData)
-  }
+      password: e.target[1].value,
+    };
+    setBody(authData);
+  };
   return (
     <Grid
-      templateColumns={{ sm: "1fr" }}
-      alignItems='center'
-      justifyContent='center'>
-      <VStack verticalAlign='middle'>
+      templateColumns={{ sm: '1fr' }}
+      alignItems="center"
+      justifyContent="center"
+    >
+      <VStack verticalAlign="middle">
         <form onSubmit={handleSubmit}>
-          <FormControl id='login' p={3} isRequired>
+          <FormControl id="login" p={3} isRequired>
             <FormLabel>Login:</FormLabel>
-            <Input type='text' size='xl'></Input>
+            <Input type="text" size="xl"></Input>
             <FormHelperText>Twój login podany na umowie</FormHelperText>
           </FormControl>
-          <FormControl id='password' p={3} isRequired>
+          <FormControl id="password" p={3} isRequired>
             <FormLabel>Hasło:</FormLabel>
-            <Input type='password' size='xl'></Input>
+            <Input type="password" size="xl"></Input>
             <FormHelperText>Twoje hasło</FormHelperText>
           </FormControl>
-          <FormControl >
+          <FormControl>
             <Button
-              type='submit'
-              variant='outline'
-              colorScheme='orange'
+              type="submit"
+              variant="outline"
+              colorScheme="orange"
               p={3}
               isLoading={status === 'loading'}
-              isFullWidth>Zaloguj</Button>
+              isFullWidth
+            >
+              Zaloguj
+            </Button>
           </FormControl>
         </form>
       </VStack>
-      <ModalPopup
-        variant='error'
-        isOpen={isOpen}
-        onClose={onClose}
-        title='Wystąpił błąd!'
-        message={error}
-      />
     </Grid>
-
-  )
+  );
 }

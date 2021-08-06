@@ -13,26 +13,39 @@ import GuardedRoute from './common/GuardedRoute'
 import Login from './pages/Login'
 import Cases from './pages/Cases'
 import NotFound from './pages/NotFound'
+import ErrorBoundaryC from './common/ErrorBoundaryC';
 
 function App() {
   return (
     <ChakraProvider theme={theme}>
       <RecoilRoot>
         <Box>
-          <Grid minH="100vh" p={3} templateRows='1fr 11fr'>
-            <Router>
-              <Header></Header>
-              <Switch>
-                <GuardedRoute path='/' exact Component={Dashboard} ComponentElse={Login} />
-                <GuardedRoute path='/cases' exact Component={Cases} ComponentElse={Login} />
-                <Route component={NotFound} />
-              </Switch>
-            </Router>
+          <Grid minH="100vh" p={3} templateRows="1fr 11fr">
+            <ErrorBoundaryC>
+              <Router>
+                <Header></Header>
+                <Switch>
+                  <GuardedRoute
+                    path="/"
+                    exact
+                    Component={Dashboard}
+                    ComponentElse={Login}
+                  />
+                  <GuardedRoute
+                    path="/cases"
+                    exact
+                    Component={Cases}
+                    ComponentElse={Login}
+                  />
+                  <Route component={NotFound} />
+                </Switch>
+              </Router>
+            </ErrorBoundaryC>
           </Grid>
         </Box>
       </RecoilRoot>
     </ChakraProvider>
-  )
+  );
 }
 
 export default App

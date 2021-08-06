@@ -23,10 +23,9 @@ interface IAddressRecord {
 router.put("/user", jwtAuth, async (req, res) => {
   console.log("update user")
   let addressID
-  const { clientID } = req.body.login
+  const { clientID } = req.body.clientID
   try {
     addressID = await client.query(addressIDQuery(clientID))
-    console.log(addressID)
     addressID = addressID.data[0]?.IDAddress
     if (!addressID) throw new Error()
   } catch (e) {

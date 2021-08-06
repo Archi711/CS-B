@@ -9,26 +9,29 @@ export default function ModalPopup(props) {
   if (props.variant === 'case') return <CaseModal {...props}></CaseModal>
 }
 
-export const ErrorModal = ({ title, message, ...props }) =>
+export const ErrorModal = ({ title, error, ...props }) => (
   <Modal isOpen={props.isOpen} onClose={props.onClose}>
     <ModalOverlay />
     <ModalContent>
-      <ModalHeader backgroundColor='red.500' textColor='white'>{title}</ModalHeader>
+      <ModalHeader backgroundColor="red.500" textColor="white">
+        {title}
+      </ModalHeader>
       <ModalBody>
-        <Text
-          borderRadius='sm'
-          fontSize='larger'
-          p='1'
-        >{message.heading}</Text>
-        <Text p='1' textColor='gray.500'>{message.description}</Text>
+        <Text borderRadius="sm" fontSize="larger" p="1">
+          {error.message}
+        </Text>
+        <Text p="1" textColor="gray.500">
+          {error.description}
+        </Text>
       </ModalBody>
       <ModalFooter>
-        <Button colorScheme='red' width='full' onClick={props.onClose}>
+        <Button colorScheme="red" width="full" onClick={props.onClose}>
           Zamknij
-          </Button>
+        </Button>
       </ModalFooter>
     </ModalContent>
   </Modal>
+);
 
 export const CaseModal = props => {
   const cltCase = [

@@ -1,13 +1,13 @@
 
 import axios from 'axios'
 import { useEffect, useState, useRef, useReducer } from 'react'
-import { ERROR_CODES_MESSAGES } from '../utils/errorMaker'
+import AppError, { ERROR_CODES_MESSAGES } from '../utils/errorMaker';
 
 const initialState = {
   status: 'idle',
   data: null,
-  error: ERROR_CODES_MESSAGES[0]
-}
+  error: ERROR_CODES_MESSAGES[0],
+};
 export default function useFetch(
   url,
   method,
@@ -27,6 +27,8 @@ export default function useFetch(
         return { ...initialState, status: 'success', data: action.payload };
       case 'failure':
         return { ...initialState, status: 'error', error: action.payload };
+      case 'reset':
+        return { ...initialState, status: 'idle' };
       default:
         return state;
     }
@@ -54,24 +56,20 @@ export default function useFetch(
       } catch (err) {
         dispatch({
           type: 'failure',
-          payload:
-            ERROR_CODES_MESSAGES[
-              err.response?.status ? err.response.status : 503
-            ],
+          payload: new AppError(
+            err?.response.status ? err.response.status : 503
+          ),
         });
         if (cancelReq.current) return;
       }
     };
     if (body) fetch();
     return () => {
+      dispatch({ type: 'reset' });
       cancelReq.current = true;
     };
     //eslint-disable-next-line react-hooks/exhaustive-deps
   }, [url, body]);
-
-  // useEffect(() => {
-  //   console.log(state)
-  // }, [state])
 
   return { state, setBody };
 }
