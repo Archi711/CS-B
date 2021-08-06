@@ -1,40 +1,40 @@
-import React, { useEffect } from 'react'
-import { Route } from 'react-router-dom'
-import { useRecoilValue, useRecoilState } from 'recoil'
-import { userState } from '../recoil/atoms'
-import { tokenSessionState } from '../recoil/selectors'
-import useFetch from '../hooks/useFetch';
+import React, { useEffect } from 'react';
+import { Route } from 'react-router-dom';
 import { Center } from '@chakra-ui/react';
 import { Spinner } from '@chakra-ui/spinner';
+import { useUserReloginMutation } from '../services/backend';
+import { useDispatch, useSelector } from 'react-redux';
+import { setUserData } from '../features/userSlice';
+import NetworkErrorPopup from './NetworkErrorPopup';
 
 export default function GuardedRoute({ Component, ComponentElse, ...rest }) {
-  const tokens = useRecoilValue(tokenSessionState);
-  const [user, setUser] = useRecoilState(userState);
-  const { state, setBody } = useFetch(`/relogin`, 'post', false);
-  const { data, status, error } = state;
+  const [trigger, { isLoading, data, error }] = useUserReloginMutation();
+  const user = useSelector(state => state.user.userData);
+  const token = useSelector(state => state.user.accessToken);
+  const dispatch = useDispatch();
+  if (user === null && token) {
+    trigger({
+      token,
+    });
+  }
 
   useEffect(() => {
-    setUser(data);
-  }, [data, setUser]);
-
-  useEffect(() => {
-    if (tokens?.accessToken && !user) {
-      setBody({ token: tokens.accessToken });
+    if (data) {
+      dispatch(setUserData(data));
     }
-  }, [user, setUser, tokens, setBody]);
+  }, [data, dispatch]);
 
-  useEffect(() => {
-    if (error.code) throw error;
-  }, [error]);
-
-  return status === 'loading' ? (
+  return isLoading ? (
     <Center width="full" height="lg">
       <Spinner size="xl" />
     </Center>
   ) : (
-    <Route
-      {...rest}
-      render={() => (user !== null ? <Component /> : <ComponentElse />)}
-    />
+    <>
+      <NetworkErrorPopup error={error} />
+      <Route
+        {...rest}
+        render={() => (user !== null ? <Component /> : <ComponentElse />)}
+      />
+    </>
   );
 }

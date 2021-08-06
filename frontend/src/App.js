@@ -14,6 +14,7 @@ import Login from './pages/Login'
 import Cases from './pages/Cases'
 import NotFound from './pages/NotFound'
 import ErrorBoundaryC from './common/ErrorBoundaryC';
+import AddCase from './components/AddCase';
 
 function App() {
   return (
@@ -32,11 +33,18 @@ function App() {
                     ComponentElse={Login}
                   />
                   <GuardedRoute
+                    path="/cases/add"
+                    exact
+                    Component={AddCase}
+                    ComponentElse={Login}
+                  />
+                  <GuardedRoute
                     path="/cases"
                     exact
                     Component={Cases}
                     ComponentElse={Login}
                   />
+
                   <Route component={NotFound} />
                 </Switch>
               </Router>

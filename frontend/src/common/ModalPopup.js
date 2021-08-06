@@ -1,37 +1,60 @@
-import React from 'react'
+import React, { useEffect } from 'react';
 import {
   Button,
-  Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Text, Flex, Box, Divider
-}
-  from '@chakra-ui/react'
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
+  Text,
+  Flex,
+  Box,
+  Divider,
+  useDisclosure,
+} from '@chakra-ui/react';
 export default function ModalPopup(props) {
-  if (props.variant === 'error') return <ErrorModal {...props}></ErrorModal>
-  if (props.variant === 'case') return <CaseModal {...props}></CaseModal>
+  if (props.variant === 'error') return <ErrorModal {...props}></ErrorModal>;
+  if (props.variant === 'case') return <CaseModal {...props}></CaseModal>;
 }
 
-export const ErrorModal = ({ title, error, ...props }) => (
-  <Modal isOpen={props.isOpen} onClose={props.onClose}>
-    <ModalOverlay />
-    <ModalContent>
-      <ModalHeader backgroundColor="red.500" textColor="white">
-        {title}
-      </ModalHeader>
-      <ModalBody>
-        <Text borderRadius="sm" fontSize="larger" p="1">
-          {error.message}
-        </Text>
-        <Text p="1" textColor="gray.500">
-          {error.description}
-        </Text>
-      </ModalBody>
-      <ModalFooter>
-        <Button colorScheme="red" width="full" onClick={props.onClose}>
-          Zamknij
-        </Button>
-      </ModalFooter>
-    </ModalContent>
-  </Modal>
-);
+export const ErrorModal = ({ heading, error, ...props }) => {
+  const { isOpen, onClose, onOpen } = useDisclosure();
+  useEffect(() => {
+    onOpen();
+  }, [onOpen]);
+  return (
+    <Modal isOpen={isOpen} onClose={onClose}>
+      <ModalOverlay />
+      <ModalContent>
+        <ModalHeader backgroundColor="red.500" textColor="white">
+          {heading}
+        </ModalHeader>
+        <ModalBody>
+          <Text borderRadius="sm" fontSize="larger" p="1">
+            {error.heading}
+          </Text>
+          <Text p="1" textColor="gray.500">
+            {error.description}
+          </Text>
+        </ModalBody>
+        <ModalFooter>
+          <Button
+            colorScheme="red"
+            width="full"
+            onClick={e => {
+              console.log('closing');
+              error = null;
+              onClose();
+            }}
+          >
+            Zamknij
+          </Button>
+        </ModalFooter>
+      </ModalContent>
+    </Modal>
+  );
+};
 
 export const CaseModal = props => {
   const cltCase = [

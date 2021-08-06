@@ -1,40 +1,31 @@
 import { Button, Center, Flex, Spacer, Spinner, Text } from '@chakra-ui/react';
-import React, { useEffect, useState } from 'react';
-import { useRecoilValue } from 'recoil';
+import { RepeatClockIcon } from '@chakra-ui/icons';
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
-import useFetch from '../hooks/useFetch';
-import { tokenSessionState } from '../recoil/selectors';
+import { setCases } from '../features/casesSlice';
 import CasesTable from '../components/CasesTable';
-import AddCase from '../components/AddCase';
+import { useGetCasesQuery } from '../services/cases';
+import NetworkErrorPopup from '../common/NetworkErrorPopup';
+import { Link } from 'react-router-dom';
 
 export default function Cases() {
-  const { accessToken } = useRecoilValue(tokenSessionState);
-  const { state, setBody } = useFetch('/cases', 'get', { token: accessToken });
-  const { status, data, error } = state;
-  const [cases, setCases] = useState([]);
-  const [addMode, setAddMode] = useState(false);
+  const dispatch = useDispatch();
+  const cases = useSelector(store => store.cases.cases);
+
+  const { isFetching, error, data, refetch } = useGetCasesQuery({
+    refetchOnMountOrArgChange: true,
+  });
 
   useEffect(() => {
-    if (error.code) {
-      throw error;
+    if (data) {
+      dispatch(setCases(data));
     }
-  }, [error]);
+  }, [data, dispatch]);
 
-  useEffect(() => {
-    if (JSON.stringify(data) !== JSON.stringify(cases)) {
-      setCases(data);
-    }
-  }, [data, setCases, cases]);
+  const handleRefresh = e => refetch();
 
-  useEffect(() => {
-    setBody(1);
-  }, [setBody]);
-
-  const addHandler = cases => {
-    setCases(cases);
-    setAddMode(false);
-  };
-  return status === 'loading' ? (
+  return isFetching ? (
     <Center>
       <Spinner size="lg" />
     </Center>
@@ -43,19 +34,16 @@ export default function Cases() {
       <Flex m={3}>
         <Text>Wybierz sprawę, aby wyświelić szczegóły</Text>
         <Spacer />
-        <Button
-          onClick={() => setAddMode(true)}
-          isDisabled={addMode}
-          colorScheme="orange"
-        >
+        <Button marginRight={5} onClick={handleRefresh}>
+          <RepeatClockIcon marginRight={3} />
+          Odśwież
+        </Button>
+        <Button as={Link} colorScheme="orange" to="/cases/add">
           Dodaj sprawę
         </Button>
       </Flex>
-      {addMode ? (
-        <AddCase handleAdded={addHandler} />
-      ) : (
-        <CasesTable cases={cases} />
-      )}
+      <CasesTable cases={cases} />
+      <NetworkErrorPopup error={error} />
     </Flex>
   );
 }

@@ -2,27 +2,27 @@ import React, { useState, useEffect } from 'react'
 import { Grid } from '@chakra-ui/layout'
 import { Button } from '@chakra-ui/button'
 import { FormControl, FormHelperText, FormLabel, Textarea } from '@chakra-ui/react'
-import { useRecoilValue } from 'recoil'
-
-import { tokenSessionState } from '../recoil/selectors'
-import useFetch from '../hooks/useFetch'
+import { useAddCaseMutation } from '../services/cases';
+import NetworkErrorPopup from '../common/NetworkErrorPopup';
+import { useHistory } from 'react-router-dom';
 
 export default function AddCase({ handleAdded }) {
-  const { accessToken } = useRecoilValue(tokenSessionState);
-  const { state, setBody } = useFetch('/cases', 'post', { token: accessToken });
-  const { status, data } = state;
   const [caseDescription, setCaseDescription] = useState('');
+  const history = useHistory();
+  const [trigger, { error, isLoading, data }] = useAddCaseMutation();
+
+  const handleChange = e => setCaseDescription(e.target.value);
 
   const handleSubmit = e => {
     e.preventDefault();
-    setBody({ data: caseDescription });
+    trigger({ data: caseDescription });
   };
 
   useEffect(() => {
-    if (data) handleAdded(data);
-  }, [data, handleAdded]);
-
-  const handleChange = e => setCaseDescription(e.target.value);
+    if (data) {
+      history.push('/cases');
+    }
+  }, [data, history]);
 
   return (
     <Grid as="form" onSubmit={handleSubmit}>
@@ -45,12 +45,13 @@ export default function AddCase({ handleAdded }) {
           variant="outline"
           colorScheme="orange"
           p={3}
-          isLoading={status === 'loading'}
+          isLoading={isLoading}
           isFullWidth
         >
           Zgłoś
         </Button>
       </FormControl>
+      <NetworkErrorPopup error={error} />
     </Grid>
   );
 }

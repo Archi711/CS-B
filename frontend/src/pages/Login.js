@@ -8,31 +8,23 @@ import {
   Button,
   VStack,
 } from '@chakra-ui/react';
-import { useSetRecoilState } from 'recoil';
+import { useHistory } from 'react-router-dom';
 
-import { userState } from '../recoil/atoms';
-import { tokenSessionState } from '../recoil/selectors';
-import useFetch from '../hooks/useFetch';
+import { useUserLoginMutation } from '../services/backend';
+import { useDispatch } from 'react-redux';
+import { setUser } from '../features/userSlice';
+import NetworkErrorPopup from '../common/NetworkErrorPopup';
 
 export default function Login() {
-  const setUser = useSetRecoilState(userState);
-  const setTokens = useSetRecoilState(tokenSessionState);
-  const { state, setBody } = useFetch(`/login`, 'post');
-  const { status, data, error } = state;
-
+  const [trigger, { isLoading, error, data }] = useUserLoginMutation();
+  const dispatch = useDispatch();
+  const history = useHistory();
   useEffect(() => {
     if (data) {
-      setUser(data.user);
-      setTokens({
-        accessToken: data.accessToken,
-        refreshToken: data.refreshToken,
-      });
+      dispatch(setUser(data));
+      history.push('/');
     }
-  }, [data, setUser, setTokens]);
-
-  useEffect(() => {
-    if (error.code) throw error;
-  }, [error]);
+  }, [data, dispatch, history]);
 
   const handleSubmit = e => {
     e.preventDefault();
@@ -40,7 +32,7 @@ export default function Login() {
       login: e.target[0].value,
       password: e.target[1].value,
     };
-    setBody(authData);
+    trigger(authData);
   };
   return (
     <Grid
@@ -66,7 +58,7 @@ export default function Login() {
               variant="outline"
               colorScheme="orange"
               p={3}
-              isLoading={status === 'loading'}
+              isLoading={isLoading}
               isFullWidth
             >
               Zaloguj
@@ -74,6 +66,7 @@ export default function Login() {
           </FormControl>
         </form>
       </VStack>
+      <NetworkErrorPopup error={error} />
     </Grid>
   );
 }

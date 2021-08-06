@@ -1,25 +1,22 @@
-import React, { useEffect } from 'react'
-import { Grid, useBoolean } from '@chakra-ui/react'
-import { useRecoilState, useRecoilValue } from 'recoil'
-import { Button } from '@chakra-ui/button'
-import { useToast } from '@chakra-ui/react'
+import React, { useEffect } from 'react';
+import { Grid, useBoolean } from '@chakra-ui/react';
+import { Button } from '@chakra-ui/button';
+import { useToast } from '@chakra-ui/react';
+import { useDispatch, useSelector } from 'react-redux';
 
-import { userState } from '../recoil/atoms'
-import UserDataControl from './UserDataControl'
-import { userDataBuider } from '../utils/userDataBuilder'
-import useFetch from '../hooks/useFetch'
-import { tokenSessionState } from '../recoil/selectors'
-
-
+import { useUpdateUserMutation } from '../services/user';
+import UserDataControl from './UserDataControl';
+import { userDataBuider } from '../utils/userDataBuilder';
+import { setUserData } from '../features/userSlice';
+import NetworkErrorPopup from '../common/NetworkErrorPopup';
 
 export default function UserData(props) {
-  const [user, setUser] = useRecoilState(userState);
-  const tokens = useRecoilValue(tokenSessionState);
+  const user = useSelector(state => state.user.userData);
+  const token = useSelector(state => state.user.accessToken);
+  const [trigger, { isLoading, data, error }] = useUpdateUserMutation();
   const [editMode, setEditMode] = useBoolean(false);
-  const { state, setBody } = useFetch('/user', 'put', false);
-  const { status, data, error } = state;
+  const dispatch = useDispatch();
   const toast = useToast();
-  debugger;
   const { personalData, contactData, addressData } = userDataBuider(user);
   const handleSaveData = e => {
     e.preventDefault();
@@ -31,9 +28,9 @@ export default function UserData(props) {
       if (entry[1].length > 0) sendReq = true;
     }
     if (sendReq) {
-      setBody({
+      trigger({
+        token,
         data: updatedData,
-        token: tokens.accessToken,
       });
     } else {
       toast({
@@ -45,9 +42,8 @@ export default function UserData(props) {
     }
   };
   useEffect(() => {
-    if (!data) return;
-    if (data !== user && tokens) {
-      setUser(data);
+    if (data && data !== user && token) {
+      dispatch(setUserData(data));
       toast.closeAll();
       toast({
         status: 'success',
@@ -57,18 +53,7 @@ export default function UserData(props) {
       });
       setEditMode.off();
     }
-  }, [data, toast, setEditMode, setUser, status, user, tokens]);
-
-  useEffect(() => {
-    if (error && status === 'error') {
-      toast({
-        status: status,
-        title: 'Błąd zapisu, spróbuj ponownie',
-        isClosable: true,
-      });
-      setEditMode.off();
-    }
-  }, [error, status, toast, setEditMode]);
+  }, [data, toast, setEditMode, user, dispatch, token]);
 
   return (
     <Grid
@@ -120,11 +105,12 @@ export default function UserData(props) {
           type="submit"
           disabled={!editMode}
           colorScheme="green"
-          isLoading={status === 'loading'}
+          isLoading={isLoading}
         >
           Zapisz dane
         </Button>
       </Grid>
+      <NetworkErrorPopup error={error} />
     </Grid>
   );
 }
